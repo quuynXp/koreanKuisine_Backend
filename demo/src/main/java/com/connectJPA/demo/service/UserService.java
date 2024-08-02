@@ -4,6 +4,7 @@ import com.connectJPA.demo.dto.request.UserCreationRequest;
 import com.connectJPA.demo.dto.request.UserUpdateRequest;
 import com.connectJPA.demo.dto.response.UserResponse;
 import com.connectJPA.demo.entity.User;
+import com.connectJPA.demo.enums.Role;
 import com.connectJPA.demo.exception.AppException;
 import com.connectJPA.demo.exception.ErrorCode;
 import com.connectJPA.demo.mapper.UserMapper;
@@ -11,39 +12,69 @@ import com.connectJPA.demo.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request){
+    public UserResponse createUser(UserCreationRequest request){
         if(userRepository.existsByUsername(request.getUsername())){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         User user = userMapper.toUser(request);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepository.save(user);
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
+        user.setRoles(roles);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public List<User> getUser(){
-        return userRepository.findAll();
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getUser(){
+        log.info("In method get Users");
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String Id){
+        log.info("In method get user by Id");
         return userMapper.toUserResponse(userRepository.findById(Id)
-                .orElseThrow(() -> new RuntimeException("User not fond")));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
+
+
+    public UserResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toUserResponse(user);
+    }
+
 
     public UserResponse updateUser(String userId, UserUpdateRequest request){
         User user = userRepository.findById(userId)

@@ -11,8 +11,12 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
 
     UserResponse toUserResponse(User user);
+
     User toUser(UserCreationRequest request);
+
+
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }
+
 
 

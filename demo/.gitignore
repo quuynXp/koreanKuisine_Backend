@@ -31,3 +31,22 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# Loại bỏ các tệp hệ điều hành
+.DS_Store
+Thumbs.db
+
+# Loại bỏ tệp nhật ký
+*.log
+
+# Loại bỏ tệp biên dịch
+*.class
+*.o
+*.so
+
+# Loại bỏ thư mục đầu ra của dự án
+/build/
+
+# Loại bỏ tệp cấu hình cá nhân
+*.env
