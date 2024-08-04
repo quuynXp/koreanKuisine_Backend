@@ -16,6 +16,8 @@ import java.util.Set;
 public class UserUpdateRequest {
     String username;
     String password;
+    String mail;
+    String phone;
     String firstName;
     String lastName;
     LocalDate dayOfBirth;

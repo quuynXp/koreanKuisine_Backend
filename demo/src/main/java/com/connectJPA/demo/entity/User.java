@@ -19,13 +19,15 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue( strategy = GenerationType.UUID)
-    private String id;
+    String id;
 
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate dayOfBirth;
+    String username;
+    String password;
+    String mail;
+    String phone;
+    String firstName;
+    String lastName;
+    LocalDate dayOfBirth;
     Set<String> roles;
 
 }

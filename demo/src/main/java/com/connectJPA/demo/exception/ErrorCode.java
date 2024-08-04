@@ -1,5 +1,9 @@
 package com.connectJPA.demo.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
     INVALID_KEY(1001, "Invalid message key"),
@@ -22,15 +26,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public int getCode() {
-        return code;
-    }
-
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
@@ -63,8 +63,6 @@ public class UserController {
                 .result(userService.updateUser(userId, request))
                 .build();
     }
-
-
 
     @DeleteMapping("/{userId}")
     String deleteUser(@PathVariable String userId){
