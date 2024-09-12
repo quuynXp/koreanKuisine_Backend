@@ -1,6 +1,6 @@
 package com.connectJPA.demo.controller;
 
-import com.connectJPA.demo.dto.request.ApiResponse;
+import com.connectJPA.demo.dto.response.ApiResponse;
 import com.connectJPA.demo.dto.request.UserCreationRequest;
 import com.connectJPA.demo.dto.request.UserUpdateRequest;
 import com.connectJPA.demo.dto.response.UserResponse;
@@ -30,7 +30,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/user")
     ApiResponse<List<UserResponse>> getUser(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -50,7 +50,7 @@ public class UserController {
     }
 
 //  Truyen vao token -> login
-    @GetMapping("/myInfo")
+    @GetMapping("/my-info")
     ApiResponse<UserResponse> getMyInfo(){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
@@ -65,8 +65,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable String userId){
+    ApiResponse<String> deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);
-        return "Has been deleted users";
+        return ApiResponse.<String>builder()
+                .result("Has been deleted users")
+                .build();
     }
 }

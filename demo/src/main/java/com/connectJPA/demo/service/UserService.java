@@ -54,7 +54,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
+    @PostAuthorize("returnObject.username == authentication.name || hasRole('ADMIN')")
     public UserResponse getUser(String Id){
         log.info("In method get user by Id");
         return userMapper.toUserResponse(userRepository.findById(Id)
@@ -75,7 +75,7 @@ public class UserService {
 
     public UserResponse updateUser(String userId, UserUpdateRequest request){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not fond"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));

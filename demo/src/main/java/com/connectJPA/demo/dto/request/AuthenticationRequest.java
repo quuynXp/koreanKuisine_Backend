@@ -10,5 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class AuthenticationRequest {
     String username;
+    String mail;
+    String phone;
     String password;
 }

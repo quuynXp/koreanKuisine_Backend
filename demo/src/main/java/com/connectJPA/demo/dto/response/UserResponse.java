@@ -15,7 +15,10 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     String id;
+
     String username;
+    String mail;
+    String phone;
     String firstName;
     String lastName;
     LocalDate dayOfBirth;

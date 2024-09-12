@@ -1,7 +1,7 @@
 package com.connectJPA.demo.service;
 
 import com.connectJPA.demo.dto.request.AuthenticationRequest;
-import com.connectJPA.demo.dto.request.AuthenticationResponse;
+import com.connectJPA.demo.dto.response.AuthenticationResponse;
 import com.connectJPA.demo.dto.request.IntrospectRequest;
 import com.connectJPA.demo.dto.response.IntrospectResponse;
 import com.connectJPA.demo.entity.User;
@@ -18,6 +18,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,8 +31,11 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -39,39 +47,60 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
-        var token = request.getToken();
+    public IntrospectResponse introspect(String token) throws ParseException, JOSEException {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+            boolean verified = signedJWT.verify(verifier);
+            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        return  IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date()))
-                .build();
+            return IntrospectResponse.builder()
+                    .valid(verified && expiryTime.after(new Date()))
+                    .userName(getUsernameFromJwt(token))
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
+
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        String username = request.getUsername();
+        String mail = request.getMail();
+        String phone = request.getPhone();
 
-        if(!authenticated)
+        Optional<User> user = Optional.empty();
+        if (mail == null && phone == null) {
+            user = userRepository.findByUsername(username);
+        } else {
+            user = userRepository.findByUsernameOrMailOrPhone(username, mail, phone);
+        }
+
+        User foundUser = user.orElseThrow(() -> {
+            System.out.println("User not found with provided credentials.");
+            return new AppException(ErrorCode.USER_NOT_EXISTED);
+        });
+
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), foundUser.getPassword());
+
+        if (!authenticated) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
 
-        var token = generateToken(user);
+        // Tạo và trả về token
+        var token = generateToken(foundUser);
 
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
                 .build();
     }
+
 
     private String generateToken(User user){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
@@ -97,6 +126,15 @@ public class AuthenticationService {
         }
     }
 
+    public String getUsernameFromJwt(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return signedJWT.getJWTClaimsSet().getSubject(); // Lấy username từ subject
+        } catch (ParseException e) {
+            throw new RuntimeException("Failed to parse JWT token", e);
+        }
+    }
+
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner("");
 
@@ -106,6 +144,13 @@ public class AuthenticationService {
 
         }
         return stringJoiner.toString();
+    }
+
+    public Authentication getAuthentication(String token) {
+        String username = getUsernameFromJwt(token);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        return new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
     }
 
 
