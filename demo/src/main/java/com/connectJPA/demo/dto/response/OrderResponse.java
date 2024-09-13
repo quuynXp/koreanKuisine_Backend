@@ -18,6 +18,8 @@ public class OrderResponse {
     String orderId;
     String userId;
     LocalDateTime orderDate;
+    String paymentMethod;
+    String promoCode;
     BigDecimal totalAmount;
     List<OrderDetailResponse> orderDetailResponses;
 }

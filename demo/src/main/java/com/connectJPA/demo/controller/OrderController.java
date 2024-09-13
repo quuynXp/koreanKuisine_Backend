@@ -47,14 +47,12 @@ public class OrderController {
 
     @PostMapping("/create")
     public ApiResponse<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-        // Kiểm tra nếu userId bị null
         if (orderRequest.getUserId() == null) {
             return ApiResponse.<OrderResponse>builder()
                     .message("UserId không thể là null.")
                     .build();
         }
 
-        // Lấy User từ repository
         Optional<User> userOptional = userRepository.findById(orderRequest.getUserId());
         if (userOptional.isEmpty()) {
             return ApiResponse.<OrderResponse>builder()
@@ -63,20 +61,12 @@ public class OrderController {
         }
         User user = userOptional.get();
 
-        // Kiểm tra nếu items bị null hoặc rỗng
         if (orderRequest.getItems() == null || orderRequest.getItems().isEmpty()) {
             return ApiResponse.<OrderResponse>builder()
                     .message("Danh sách item không thể là null hoặc rỗng.")
                     .build();
         }
 
-        // Tạo đơn hàng mới
-        Orders order = Orders.builder()
-                .user(user)
-                .totalAmount(orderRequest.getTotalAmount())
-                .build();
-
-        // Tạo OrderDetail từ danh sách các item
         List<OrderDetail> orderDetails = orderRequest.getItems().stream().map(item -> {
             OrderDetail detail = new OrderDetail();
             detail.setProductName(item.getProductName());
@@ -87,20 +77,16 @@ public class OrderController {
             return detail;
         }).collect(Collectors.toList());
 
-        // Lưu tất cả OrderDetail cho đơn hàng
-        orderDetails.forEach(detail -> {
-            detail.setOrders(order);
-            orderDetailService.saveOrderDetail(detail);
-        });
-
-        Orders savedOrder = orderService.saveOrder(order);
+        Orders savedOrder = orderService.createOrder(user, orderDetails, orderRequest.getPromoCode(), orderRequest.getPaymentMethod());
 
         OrderResponse orderResponse = orderMapper.toOrderResponse(savedOrder);
+
         return ApiResponse.<OrderResponse>builder()
                 .result(orderResponse)
                 .message("Đơn hàng đã được tạo thành công.")
                 .build();
     }
+
 
 
 

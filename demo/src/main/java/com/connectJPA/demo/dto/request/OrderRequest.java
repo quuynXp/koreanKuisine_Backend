@@ -17,6 +17,8 @@ public class OrderRequest {
     String cartId;
     String userId;
     BigDecimal totalAmount;
+    String paymentMethod;
+    String promoCode;
     List<OrderDetailRequest> items;
 }
 

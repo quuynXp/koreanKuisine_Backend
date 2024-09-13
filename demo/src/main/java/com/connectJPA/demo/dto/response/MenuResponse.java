@@ -20,6 +20,7 @@ public class MenuResponse {
     String ingredients;
     String description;
     String type;
+    String productType;
     double rating;
     String imageUrl;
     String images;

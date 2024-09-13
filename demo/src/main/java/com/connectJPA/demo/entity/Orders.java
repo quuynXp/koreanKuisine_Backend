@@ -33,6 +33,11 @@ public class Orders {
     @Builder.Default
     List<OrderDetail> orderDetails = new ArrayList<>();
 
+    @Column(nullable = false)
+    String paymentMethod;
+
+    String promoCode;
+
     @ManyToOne
     @JoinColumn(name = "cart_id")
     Cart cart;
