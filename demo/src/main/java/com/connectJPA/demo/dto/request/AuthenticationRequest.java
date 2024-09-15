@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class AuthenticationRequest {
-    String username;
-    String mail;
-    String phone;
+    String usernameOrMailOrPhone;
     String password;
 }

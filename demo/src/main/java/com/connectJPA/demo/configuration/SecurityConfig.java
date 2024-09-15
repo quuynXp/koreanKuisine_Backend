@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/login", "/auth/introspect", "/users/register",
     //dish
-            "/carts/create", "/carts/add", "/carts/remove", "/orders/create", "/order-details/create"};
+            "/carts/create", "/carts/add", "/carts/remove", "/orders/create", "/order-details/create", "/booking/create"};
     // drinks
     // menu
     // };
@@ -43,10 +43,14 @@ public class SecurityConfig {
                                                     ,"/menu/search" ,"/menu/search-by-basicInfo", "/menu/{productType}/{id}",
 //                                                    //images
                                                     "/images/**",
+                                                        "booking/search",
                                                         //orders
                                                     "/orders/{userId}",
+                                                    "/orders/{id}",
                                                     //order-details
                                                     "/order-details/{orderId}", "/carts/current"
+                                                    //booking
+                                                    ,"/booking/{id}",
                                                     };
 
     @Value("${jwt.signerKey}")

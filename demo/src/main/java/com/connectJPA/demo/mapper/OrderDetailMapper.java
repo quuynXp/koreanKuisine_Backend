@@ -13,7 +13,7 @@ public interface OrderDetailMapper {
 
     @Mapping(source = "productId", target = "productId")
     @Mapping(source = "productName", target = "productName")
-    @Mapping(source = "imageUrl", target = "imageUrl")  // Đảm bảo ánh xạ đúng trường imageUrl
+    @Mapping(source = "imageUrl", target = "imageUrl")
     @Mapping(source = "productType", target = "productType")
     @Mapping(source = "quantity", target = "quantity")
     @Mapping(source = "unitPrice", target = "unitPrice")

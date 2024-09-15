@@ -29,18 +29,14 @@ public class Orders {
     @Builder.Default
     BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    List<OrderDetail> orderDetails = new ArrayList<>();
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<OrderDetail> orderDetails;
+
 
     @Column(nullable = false)
     String paymentMethod;
 
     String promoCode;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    Cart cart;
 
     @Column(name = "orders_date")
     LocalDateTime ordersDate;

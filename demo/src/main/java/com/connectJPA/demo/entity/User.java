@@ -27,10 +27,13 @@ public class User {
     @Column(unique = true, nullable = false)
     String username;
 
+    @Column(nullable = false)
     String password;
 
+    @Column(nullable = false, unique = true)
     String mail;
 
+    @Column(nullable = false, unique = true)
     String phone;
 
     String firstName;

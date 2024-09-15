@@ -1,7 +1,9 @@
 package com.connectJPA.demo.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -20,13 +22,14 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orders_id")
     Orders orders;
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
     Cart cart;
+
 
     String productId;
     String productName;
@@ -56,10 +59,4 @@ public class OrderDetail {
     public BigDecimal calculateTotalPrice() {
         return unitPrice.multiply(quantity);
     }
-
-
-
 }
-
-
-

@@ -3,11 +3,15 @@ package com.connectJPA.demo.controller;
 import com.connectJPA.demo.dto.request.OrderDetailRequest;
 import com.connectJPA.demo.dto.request.OrderRequest;
 import com.connectJPA.demo.dto.response.*;
+import com.connectJPA.demo.entity.Cart;
 import com.connectJPA.demo.entity.OrderDetail;
 import com.connectJPA.demo.entity.Orders;
 import com.connectJPA.demo.entity.User;
+import com.connectJPA.demo.enums.PromoCode;
 import com.connectJPA.demo.mapper.OrderMapper;
+import com.connectJPA.demo.repository.CartRepository;
 import com.connectJPA.demo.repository.UserRepository;
+import com.connectJPA.demo.service.CartService;
 import com.connectJPA.demo.service.OrderDetailService;
 import com.connectJPA.demo.service.OrderService;
 import lombok.AccessLevel;
@@ -32,6 +36,8 @@ public class OrderController {
     UserRepository userRepository;
     OrderMapper orderMapper;
     OrderDetailService orderDetailService;
+    CartRepository cartRepository;
+    CartService cartService;
 
     @GetMapping("/all")
     public ApiResponse<List<OrderResponse>> getAllOrders() {
@@ -61,23 +67,17 @@ public class OrderController {
         }
         User user = userOptional.get();
 
-        if (orderRequest.getItems() == null || orderRequest.getItems().isEmpty()) {
+        Optional<Cart> cartOpt = cartRepository.findByUser(user);
+        if (cartOpt.isEmpty()) {
             return ApiResponse.<OrderResponse>builder()
-                    .message("Danh sách item không thể là null hoặc rỗng.")
+                    .message("Giỏ hàng không tồn tại.")
                     .build();
         }
+        Cart cart = cartOpt.get();
 
-        List<OrderDetail> orderDetails = orderRequest.getItems().stream().map(item -> {
-            OrderDetail detail = new OrderDetail();
-            detail.setProductName(item.getProductName());
-            detail.setQuantity(item.getQuantity());
-            detail.setProductType(item.getProductType());
-            detail.setUnitPrice(item.getUnitPrice());
-            detail.setTotalPrice(item.getUnitPrice().multiply(item.getQuantity()));
-            return detail;
-        }).collect(Collectors.toList());
+        Orders savedOrder = orderService.createOrder(user, cart, orderRequest.getPromoCode(), orderRequest.getPaymentMethod());
 
-        Orders savedOrder = orderService.createOrder(user, orderDetails, orderRequest.getPromoCode(), orderRequest.getPaymentMethod());
+        cartService.clearCartById(cart.getId(), savedOrder);
 
         OrderResponse orderResponse = orderMapper.toOrderResponse(savedOrder);
 
@@ -86,11 +86,6 @@ public class OrderController {
                 .message("Đơn hàng đã được tạo thành công.")
                 .build();
     }
-
-
-
-
-
 
 
 
@@ -110,9 +105,16 @@ public class OrderController {
                 .map(orderMapper::toOrderResponse)
                 .collect(Collectors.toList());
 
+        log.debug("Order Responses: {}", orderResponses);
+
         return ApiResponse.<List<OrderResponse>>builder()
                 .result(orderResponses)
                 .build();
+    }
+
+    @GetMapping("/checkDiscount")
+    public int checkDiscount(@RequestParam String promoCode){
+        return PromoCode.findDiscount(promoCode);
     }
 }
 

@@ -26,24 +26,23 @@ public class Cart {
     User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     List<OrderDetail> orderDetails = new ArrayList<>();
 
     BigDecimal totalAmount = BigDecimal.ZERO;
 
     public void addOrderDetail(OrderDetail orderDetail) {
         orderDetails.add(orderDetail);
-        orderDetail.setCart(this);
         totalAmount = totalAmount.add(orderDetail.getTotalPrice());
+        orderDetail.setCart(this);
     }
 
     public void removeOrderDetail(OrderDetail orderDetail) {
         orderDetails.remove(orderDetail);
-        orderDetail.setCart(null);
         totalAmount = totalAmount.subtract(orderDetail.getTotalPrice());
+        orderDetail.setCart(null);
     }
 
+    public void updateTotalAmount(BigDecimal amount) {
+        this.totalAmount = amount;
+    }
 }
-
-
-

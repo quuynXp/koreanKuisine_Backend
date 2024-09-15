@@ -70,16 +70,9 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-        String username = request.getUsername();
-        String mail = request.getMail();
-        String phone = request.getPhone();
+        String usernameOrMailOrPhone = request.getUsernameOrMailOrPhone();
 
-        Optional<User> user = Optional.empty();
-        if (mail == null && phone == null) {
-            user = userRepository.findByUsername(username);
-        } else {
-            user = userRepository.findByUsernameOrMailOrPhone(username, mail, phone);
-        }
+        Optional<User> user = userRepository.findByUsernameOrMailOrPhone(usernameOrMailOrPhone, usernameOrMailOrPhone, usernameOrMailOrPhone);
 
         User foundUser = user.orElseThrow(() -> {
             System.out.println("User not found with provided credentials.");

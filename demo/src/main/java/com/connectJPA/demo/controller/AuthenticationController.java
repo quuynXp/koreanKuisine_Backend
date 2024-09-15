@@ -26,6 +26,7 @@ public class AuthenticationController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
+        System.out.println(request.getUsernameOrMailOrPhone());
         var result = authenticationService.authenticate(request);
 
         HttpHeaders headers = new HttpHeaders();
