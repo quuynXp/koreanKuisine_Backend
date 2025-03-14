@@ -12,6 +12,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface DishMapper {
     DishMapper INSTANCE = Mappers.getMapper(DishMapper.class);
@@ -22,6 +24,8 @@ public interface DishMapper {
 
 
     void updateDish(@MappingTarget Dish dish, DishUpdateRequest request);
+
+    List<DishResponse> toDishResponse(List<Dish> topDishes);
 }
 
 

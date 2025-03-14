@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -30,6 +31,9 @@ public class OrderDetail {
     @JoinColumn(name = "cart_id")
     Cart cart;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    Product product;        
 
     String productId;
     String productName;
@@ -59,4 +63,9 @@ public class OrderDetail {
     public BigDecimal calculateTotalPrice() {
         return unitPrice.multiply(quantity);
     }
+
+//    public static Object getDish(Object o) {
+//        List<Dish>
+//        return
+//    }
 }

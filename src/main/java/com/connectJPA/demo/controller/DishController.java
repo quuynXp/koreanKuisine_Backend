@@ -5,6 +5,7 @@ import com.connectJPA.demo.dto.request.DishCreationRequest;
 import com.connectJPA.demo.dto.request.DishUpdateRequest;
 import com.connectJPA.demo.dto.response.DishResponse;
 import com.connectJPA.demo.dto.response.ProductResponse;
+import com.connectJPA.demo.entity.Dish;
 import com.connectJPA.demo.service.DishService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -97,4 +98,11 @@ public class DishController {
                 .result("Dish has been deleted")
                 .build();
     }
+    @GetMapping("/recommended")
+    public ApiResponse<List<DishResponse>> getRecommendedDishes(@RequestParam Long userId) {
+        return ApiResponse.<List<DishResponse>>builder()
+                .result(dishService.getRecommendedDishes(userId))
+                .build();
+    }
+
 }

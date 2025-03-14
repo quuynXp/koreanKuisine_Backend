@@ -14,5 +14,6 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     List<Orders> findByUserIdWithDetails(@Param("userId") String userId);
 
 
+    List<Orders> findByUserId(String userId);
 }
 

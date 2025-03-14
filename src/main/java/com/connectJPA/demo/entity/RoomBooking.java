@@ -1,5 +1,8 @@
 package com.connectJPA.demo.entity;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,35 +12,31 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Getter
-@Setter
+
+@Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Booking {
+public class RoomBooking {
     @Id
-    @GeneratedValue( strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String id;
 
-    String name;
-    String email;
-    String phone;
-    String numberOfGuests;
-    String branch;
-    @Column(name = "`table`")
-    String table;
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    Room room;
 
-    String note;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
-    LocalDateTime bookingDate;
+    LocalDate checkInDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
+    LocalDate checkOutDate;
 
+    double totalPrice;
 }

@@ -45,6 +45,16 @@ public class UserService {
         user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
     }
+    public User findOrCreateUserByEmailAndPhone(String mail, String phone) {
+        return userRepository.findByEmailOrPhone(mail, phone)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .mail(mail)
+                            .phone(phone)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUser(){

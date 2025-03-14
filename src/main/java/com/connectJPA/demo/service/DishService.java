@@ -6,12 +6,15 @@ import com.connectJPA.demo.dto.request.DishUpdateRequest;
 import com.connectJPA.demo.dto.response.DishResponse;
 import com.connectJPA.demo.dto.response.ProductResponse;
 import com.connectJPA.demo.entity.Dish;
+import com.connectJPA.demo.entity.OrderDetail;
+import com.connectJPA.demo.entity.Orders;
 import com.connectJPA.demo.entity.Product;
 import com.connectJPA.demo.exception.AppException;
 import com.connectJPA.demo.exception.ErrorCode;
 import com.connectJPA.demo.mapper.DishMapper;
 import com.connectJPA.demo.mapper.ProductMapper;
 import com.connectJPA.demo.repository.DishRepository;
+import com.connectJPA.demo.repository.OrderRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DishService implements ProductService<DishCreationRequest, DishUpdateRequest, DishResponse> {
     DishRepository dishRepository;
+    OrderRepository orderRepository;
     DishMapper dishMapper;
 
     @Override
@@ -130,5 +135,21 @@ public class DishService implements ProductService<DishCreationRequest, DishUpda
         Dish dish = dishRepository.findById(dishId)
                 .orElseThrow(() -> new AppException(ErrorCode.DISH_NOT_EXISTED));
         return dishMapper.toDishResponse(dish);
+    }
+
+    public List<DishResponse> getRecommendedDishes(String userId) {
+        List<Orders> pastOrders = orderRepository.findByUserId(userId);
+
+        Map<Dish, String> dishFrequency = pastOrders.stream()
+                .flatMap(order -> order.getOrderDetails().stream())
+                .collect(Collectors.groupingBy(OrderDetail::getDish, Collectors.counting()));
+
+        List<Dish> topDishes = dishFrequency.entrySet().stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())) // Sắp xếp theo số lần đặt
+                .map(Map.Entry::getKey)
+                .limit(5) // Lấy top 5 món phổ biến
+                .collect(Collectors.toList());
+
+        return dishMapper.toDishResponse(topDishes);
     }
 }

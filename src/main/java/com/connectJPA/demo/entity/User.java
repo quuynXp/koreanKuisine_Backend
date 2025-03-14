@@ -1,4 +1,5 @@
 package com.connectJPA.demo.entity;
+import com.connectJPA.demo.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -39,13 +40,21 @@ public class User {
     String firstName;
     String lastName;
     LocalDate dayOfBirth;
-    Set<String> roles;
+
+    @ManyToMany
+    Set<Role> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Orders> orders = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Cart cart;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<TableBooking> tableBookings;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<RoomBooking> roomBookings;
 
     public void addOrder(Orders order) {
         orders.add(order);
@@ -57,19 +66,7 @@ public class User {
         order.setUser(null);
     }
 
-    // Chuyển danh sách roles thành GrantedAuthority
-    public List<GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-    public void addRole(String role) {
-        roles.add(role);
-    }
 
-    public void removeRole(String role) {
-        roles.remove(role);
-    }
 
 
 }

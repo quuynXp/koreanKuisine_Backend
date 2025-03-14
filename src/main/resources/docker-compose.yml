@@ -7,10 +7,10 @@ services:
       MYSQL_DATABASE: restaurant
       MYSQL_USER: root
       MYSQL_PASSWORD: 12345678
-      MYSQL_TCP_PORT: 3306  # Cấu hình cổng TCP
+      MYSQL_TCP_PORT: 3306
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql  # Sửa đường dẫn đúng
+      - mysql-data:/var/lib/mysql
     networks:
       - my-network
