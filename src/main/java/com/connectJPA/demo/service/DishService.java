@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DishService implements ProductService<DishCreationRequest, DishUpdateRequest, DishResponse> {
     DishRepository dishRepository;
-    OrderRepository orderRepository;
     DishMapper dishMapper;
 
     @Override
@@ -135,21 +134,5 @@ public class DishService implements ProductService<DishCreationRequest, DishUpda
         Dish dish = dishRepository.findById(dishId)
                 .orElseThrow(() -> new AppException(ErrorCode.DISH_NOT_EXISTED));
         return dishMapper.toDishResponse(dish);
-    }
-
-    public List<DishResponse> getRecommendedDishes(String userId) {
-        List<Orders> pastOrders = orderRepository.findByUserId(userId);
-
-        Map<Dish, String> dishFrequency = pastOrders.stream()
-                .flatMap(order -> order.getOrderDetails().stream())
-                .collect(Collectors.groupingBy(OrderDetail::getDish, Collectors.counting()));
-
-        List<Dish> topDishes = dishFrequency.entrySet().stream()
-                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())) // Sắp xếp theo số lần đặt
-                .map(Map.Entry::getKey)
-                .limit(5) // Lấy top 5 món phổ biến
-                .collect(Collectors.toList());
-
-        return dishMapper.toDishResponse(topDishes);
     }
 }

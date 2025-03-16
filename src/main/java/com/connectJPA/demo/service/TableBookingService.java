@@ -5,19 +5,24 @@ import com.connectJPA.demo.entity.TableBooking;
 import com.connectJPA.demo.entity.User;
 import com.connectJPA.demo.repository.DiningTableRepository;
 import com.connectJPA.demo.repository.TableBookingRepository;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TableBookingService {
     private final TableBookingRepository tableBookingRepository;
     private final DiningTableRepository diningTableRepository;
     private final UserService userService;
 
-    public TableBooking bookTable(String tableId, String email, String phoneNumber, LocalDateTime bookingTime, int numberOfPeople) {
+    public TableBooking bookTable(String tableId, String email, String phoneNumber, LocalDateTime bookingDate, int numberOfPeople) {
         User user = userService.findOrCreateUserByEmailAndPhone(email, phoneNumber);
 
         DiningTable table = diningTableRepository.findById(tableId)
@@ -26,7 +31,7 @@ public class TableBookingService {
         TableBooking booking = TableBooking.builder()
                 .table(table)
                 .user(user)
-                .bookingTime(bookingTime)
+                .bookingDate(bookingDate)
                 .numberOfPeople(numberOfPeople)
                 .build();
 

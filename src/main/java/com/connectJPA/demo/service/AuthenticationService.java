@@ -5,6 +5,7 @@ import com.connectJPA.demo.dto.response.AuthenticationResponse;
 import com.connectJPA.demo.dto.request.IntrospectRequest;
 import com.connectJPA.demo.dto.response.IntrospectResponse;
 import com.connectJPA.demo.entity.User;
+import com.connectJPA.demo.entity.Role;
 import com.connectJPA.demo.exception.AppException;
 import com.connectJPA.demo.exception.ErrorCode;
 import com.connectJPA.demo.repository.UserRepository;
@@ -131,11 +132,15 @@ public class AuthenticationService {
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner("");
 
-        if(!CollectionUtils.isEmpty(user.getRoles())){
-            user.getRoles().forEach(stringJoiner::add);
 
+//        if(!CollectionUtils.isEmpty(user.getRoles()))
+//            user.getRoles().forEach(role -> {
+//                stringJoiner.add(role.getName());
+//                if(!CollectionUtils.isEmpty(role.getPermission()))
+//                    role.getPermission().
+//                            forEach(permission -> stringJoiner.add(permission.getName()));
+//            });
 
-        }
         return stringJoiner.toString();
     }
 

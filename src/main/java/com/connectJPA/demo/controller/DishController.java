@@ -26,6 +26,7 @@ import java.util.List;
 public class DishController {
     DishService dishService;
 
+
     @PostMapping("/create")
     public ApiResponse<DishResponse> createDish(@RequestBody DishCreationRequest request) {
         return ApiResponse.<DishResponse>builder()
@@ -96,12 +97,6 @@ public class DishController {
         dishService.deleteProduct(dishId);
         return ApiResponse.<String>builder()
                 .result("Dish has been deleted")
-                .build();
-    }
-    @GetMapping("/recommended")
-    public ApiResponse<List<DishResponse>> getRecommendedDishes(@RequestParam Long userId) {
-        return ApiResponse.<List<DishResponse>>builder()
-                .result(dishService.getRecommendedDishes(userId))
                 .build();
     }
 

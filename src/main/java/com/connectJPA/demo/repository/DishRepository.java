@@ -34,6 +34,7 @@ public interface DishRepository extends JpaRepository<Dish , String>{
     boolean existsByName(String name);
     Optional<Dish> findByName(String name);
     Optional<List<Dish>> findByType(String type);
+    List<Dish> findByTypeIn(String type);
     Optional<List<Dish>> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
     Optional<List<Dish>> findByRatingBetween(double ratingMin, double ratingMax);
     Optional<List<Dish>> findByNameContaining(String name);

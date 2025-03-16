@@ -19,19 +19,20 @@ public class TableBooking {
     @GeneratedValue( strategy = GenerationType.UUID)
     String id;
 
-    String name;
-    String email;
-    String phone;
-    String numberOfGuests;
-    String branch;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 
-    @Column(name = "`table`")
-    String table;
+    @ManyToOne
+    @JoinColumn(name = "table_id")
+    DiningTable table;
 
     String note;
 
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     LocalDateTime bookingDate;
+
+    int numberOfPeople;
 
 }

@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -21,5 +22,5 @@ public class UserUpdateRequest {
     String firstName;
     String lastName;
     LocalDate dayOfBirth;
-    Set<String> roles;
+    List<String> roles;
 }

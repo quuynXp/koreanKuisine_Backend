@@ -8,6 +8,7 @@ import com.connectJPA.demo.enums.Role;
 import com.connectJPA.demo.exception.AppException;
 import com.connectJPA.demo.exception.ErrorCode;
 import com.connectJPA.demo.mapper.UserMapper;
+import com.connectJPA.demo.repository.RoleRepository;
 import com.connectJPA.demo.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
@@ -42,7 +44,7 @@ public class UserService {
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
 
-        user.setRoles(roles);
+//        user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
     }
     public User findOrCreateUserByEmailAndPhone(String mail, String phone) {
@@ -88,6 +90,11 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+//        user.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
