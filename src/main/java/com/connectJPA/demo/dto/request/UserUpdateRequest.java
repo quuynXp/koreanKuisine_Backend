@@ -1,5 +1,6 @@
 package com.connectJPA.demo.dto.request;
 
+import com.connectJPA.demo.entity.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,10 +19,10 @@ import java.util.Set;
 public class UserUpdateRequest {
     String username;
     String password;
-    String mail;
+    String email;
     String phone;
     String firstName;
     String lastName;
     LocalDate dayOfBirth;
-    List<String> roles;
+    List<Role> roles;
 }

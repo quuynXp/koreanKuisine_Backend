@@ -1,13 +1,17 @@
 package com.connectJPA.demo.entity;
 
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class Product {
     @Id

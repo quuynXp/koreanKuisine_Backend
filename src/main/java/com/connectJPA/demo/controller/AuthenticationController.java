@@ -1,6 +1,7 @@
 package com.connectJPA.demo.controller;
 
 
+import com.connectJPA.demo.dto.request.LogoutRequest;
 import com.connectJPA.demo.dto.response.ApiResponse;
 import com.connectJPA.demo.dto.request.AuthenticationRequest;
 import com.connectJPA.demo.dto.response.AuthenticationResponse;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -26,7 +28,7 @@ public class AuthenticationController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
-        System.out.println(request.getUsernameOrMailOrPhone());
+        System.out.println(request.getUsernameOrEmailOrPhone());
         var result = authenticationService.authenticate(request);
 
         HttpHeaders headers = new HttpHeaders();
@@ -39,13 +41,19 @@ public class AuthenticationController {
                         .build());
     }
 
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException{
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
 
     @PostMapping(value = "/introspect")
-    public ApiResponse<IntrospectResponse> introspect(@RequestHeader("Authorization") String authorizationHeader) throws ParseException, JOSEException {
+    public ApiResponse<IntrospectResponse> introspect(@RequestHeader("Authorization") IntrospectRequest request) throws ParseException, JOSEException {
         // Loại bỏ "Bearer " để chỉ lấy token
-        String token = authorizationHeader.replace("Bearer ", "");
 
-        var result = authenticationService.introspect(token);
+        var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
                 .build();

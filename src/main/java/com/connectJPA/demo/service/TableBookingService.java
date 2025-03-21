@@ -40,5 +40,24 @@ public class TableBookingService {
 
         return tableBookingRepository.save(booking);
     }
+
+    public TableBooking updateBookTable(String tableId, String email, String phoneNumber, LocalDateTime bookingDate, int numberOfPeople) {
+        User user = userService.findOrCreateUserByEmailAndPhone(email, phoneNumber);
+
+        DiningTable table = diningTableRepository.findById(tableId)
+                .orElseThrow(() -> new RuntimeException("Table not found"));
+
+        TableBooking booking = TableBooking.builder()
+                .table(table)
+                .user(user)
+                .bookingDate(bookingDate)
+                .numberOfPeople(numberOfPeople)
+                .build();
+
+        table.setAvailable(false);
+        diningTableRepository.save(table);
+
+        return tableBookingRepository.save(booking);
+    }
 }
 

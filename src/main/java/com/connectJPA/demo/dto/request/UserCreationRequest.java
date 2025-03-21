@@ -1,5 +1,6 @@
 package com.connectJPA.demo.dto.request;
 
+import com.connectJPA.demo.entity.Role;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,10 +21,9 @@ public class UserCreationRequest {
 
     @Size(min = 8, message = "INVALID_PASSWORD")
     String password;
-    String mail;
+    String email;
     String phone;
     String firstName;
     String lastName;
     LocalDate dayOfBirth;
-    Set<String> roles;
 }

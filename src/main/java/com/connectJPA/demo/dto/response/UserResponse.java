@@ -1,5 +1,6 @@
 package com.connectJPA.demo.dto.response;
 
+import com.connectJPA.demo.entity.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,10 +18,10 @@ public class UserResponse {
     String id;
 
     String username;
-    String mail;
+    String email;
     String phone;
     String firstName;
     String lastName;
     LocalDate dayOfBirth;
-    Set<String> roles;
+    Set<Role> roles;
 }

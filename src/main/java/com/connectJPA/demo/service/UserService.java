@@ -47,11 +47,11 @@ public class UserService {
 //        user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
     }
-    public User findOrCreateUserByEmailAndPhone(String mail, String phone) {
-        return userRepository.findByEmailOrPhone(mail, phone)
+    public User findOrCreateUserByEmailAndPhone(String email, String phone) {
+        return userRepository.findByEmailOrPhone(email, phone)
                 .orElseGet(() -> {
                     User newUser = User.builder()
-                            .mail(mail)
+                            .email(email)
                             .phone(phone)
                             .build();
                     return userRepository.save(newUser);
@@ -92,8 +92,8 @@ public class UserService {
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(request.getRoles());
-//        user.setRoles(new HashSet<>(roles));
+        var roles = roleRepository.findByIdIn(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

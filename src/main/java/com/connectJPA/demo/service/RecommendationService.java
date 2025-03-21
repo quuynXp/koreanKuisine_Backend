@@ -9,16 +9,14 @@ import com.connectJPA.demo.mapper.DrinksMapper;
 import com.connectJPA.demo.repository.DishRepository;
 import com.connectJPA.demo.repository.DrinksRepository;
 import com.connectJPA.demo.repository.OrderRepository;
+import com.connectJPA.demo.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +25,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RecommendationService {
+    private final ProductRepository productRepository;
     OrderRepository orderRepository;
     DishRepository dishRepository;
     DrinksRepository drinksRepository;
@@ -37,10 +36,35 @@ public class RecommendationService {
     public List<ProductResponse> getRecommendedProducts(String userId) {
         List<Orders> pastOrders = orderRepository.findByUserId(userId);
 
+        // Lấy danh sách productId từ OrderDetail
+        List<String> productIds = pastOrders.stream()
+                .flatMap(order -> order.getOrderDetails().stream())
+                .map(OrderDetail::getProductId)
+                .distinct() // Loại bỏ trùng lặp
+                .toList();
+        @SuppressWarnings("unchecked")
+        List<Product> products = (List<Product>) productRepository.findAllById(productIds);
+
+
+        // Truy vấn Product một lần để tối ưu hiệu suất
+        Map<String, Product> productMap = products.stream()
+                .filter(Objects::nonNull) // Bỏ qua phần tử null
+                .collect(Collectors.toMap(
+                        Product::getId,
+                        product -> product,
+                        (existing, duplicate) -> existing // Nếu trùng ID, giữ lại giá trị cũ
+                ));
+
+
+
+
         // Nhóm sản phẩm theo tần suất đặt hàng
         Map<Product, Long> productFrequency = pastOrders.stream()
                 .flatMap(order -> order.getOrderDetails().stream())
-                .collect(Collectors.groupingBy(OrderDetail::getProduct, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                        orderDetail -> productMap.get(orderDetail.getProductId()), // Lấy Product từ map
+                        Collectors.counting()
+                ));
 
         // Lấy top 5 sản phẩm phổ biến
         List<Product> topProducts = productFrequency.entrySet().stream()

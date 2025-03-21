@@ -1,4 +1,4 @@
-package com.connectJPA.demo.dto.response;
+package com.connectJPA.demo.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class IntrospectResponse {
-    boolean valid;
+public class LogoutRequest {
+    String token;
 }

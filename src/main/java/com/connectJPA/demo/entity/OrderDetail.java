@@ -31,11 +31,10 @@ public class OrderDetail {
     @JoinColumn(name = "cart_id")
     Cart cart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    Product product;        
 
+    @Column(name = "product_id")
     String productId;
+
     String productName;
     BigDecimal quantity;
 
@@ -43,8 +42,10 @@ public class OrderDetail {
     String imageUrl;
 
     BigDecimal unitPrice;
+    
     @Builder.Default
     BigDecimal totalPrice = BigDecimal.ZERO;
+
     String productType;
 
     @Override

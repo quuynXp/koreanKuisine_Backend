@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 public class Role {
     @Id
     String name;
-    String description;
 
+    String description;
 
     @ManyToMany
     Set<Permission> permissions;

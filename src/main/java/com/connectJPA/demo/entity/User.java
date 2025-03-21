@@ -1,5 +1,7 @@
 package com.connectJPA.demo.entity;
-import com.connectJPA.demo.enums.Role;
+import com.connectJPA.demo.entity.Role;
+import com.connectJPA.demo.exception.ErrorCode;
+import com.connectJPA.demo.validator.DobContraints;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -32,13 +34,15 @@ public class User {
     String password;
 
     @Column(nullable = false, unique = true)
-    String mail;
+    String email;
 
     @Column(nullable = false, unique = true)
     String phone;
 
     String firstName;
     String lastName;
+
+    @DobContraints(min = 18, message = "INVALID_DOB")
     LocalDate dayOfBirth;
 
     @ManyToMany
@@ -65,8 +69,5 @@ public class User {
         orders.remove(order);
         order.setUser(null);
     }
-
-
-
 
 }
