@@ -51,7 +51,7 @@ public class EmailService {
                 Chúng tôi vừa ra mắt voucher mới dành riêng cho bạn:
                 Giảm giá 20%% cho đơn hàng đầu tiên!
                 
-                Sử dụng mã: 241224 khi đặt hàng.
+                Sử dụng mã: **%s** khi đặt hàng.
                 
                 Hãy nhanh tay vì số lượng có hạn!
                 """.formatted(voucherCode);
