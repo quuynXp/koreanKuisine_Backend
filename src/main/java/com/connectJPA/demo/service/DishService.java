@@ -15,6 +15,7 @@ import com.connectJPA.demo.mapper.DishMapper;
 import com.connectJPA.demo.mapper.ProductMapper;
 import com.connectJPA.demo.repository.DishRepository;
 import com.connectJPA.demo.repository.OrderRepository;
+import com.connectJPA.demo.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class DishService implements ProductService<DishCreationRequest, DishUpdateRequest, DishResponse> {
     DishRepository dishRepository;
     DishMapper dishMapper;
+    ProductRepository productRepository;
 
     @Override
     public List<DishResponse> filterProducts(String type, String description, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, Double maxRating) {
@@ -116,8 +118,8 @@ public class DishService implements ProductService<DishCreationRequest, DishUpda
     }
 
     @Override
-    public void deleteProduct(String id) {
-        dishRepository.deleteById(id);
+    public void deleteProduct(String productId) {
+        productRepository.deleteById(productId);
     }
 
     @Override

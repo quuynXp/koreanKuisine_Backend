@@ -14,7 +14,7 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "dish")
+@Table(name = "dishs")
 public class Dish extends Product{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

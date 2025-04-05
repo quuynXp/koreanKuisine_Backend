@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, String> {
-    List<Role> findByIdIn(List<Role> ids);
+    List<Role> findByIdIn(List<Role> names);
 }

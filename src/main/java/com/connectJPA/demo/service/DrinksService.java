@@ -14,6 +14,7 @@ import com.connectJPA.demo.exception.ErrorCode;
 import com.connectJPA.demo.mapper.DrinksMapper;
 import com.connectJPA.demo.mapper.ProductMapper;
 import com.connectJPA.demo.repository.DrinksRepository;
+import com.connectJPA.demo.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class DrinksService implements ProductService<DrinksCreationRequest, DrinksUpdateRequest, DrinksResponse> {
     DrinksRepository drinksRepository;
     DrinksMapper drinksMapper;
+    ProductRepository productRepository;
 
     @Override
     public List<DrinksResponse> filterProducts(String type, String description, BigDecimal minPrice, BigDecimal maxPrice, Double minRating, Double maxRating) {
@@ -114,8 +116,8 @@ public class DrinksService implements ProductService<DrinksCreationRequest, Drin
     }
 
     @Override
-    public void deleteProduct(String id) {
-        drinksRepository.deleteById(id);
+    public void deleteProduct(String productId) {
+        productRepository.deleteById(productId);
     }
 
     @Override

@@ -32,7 +32,7 @@ public interface DrinksRepository extends JpaRepository<Drinks, String>{
     boolean existsByName(String name);
     Optional<Drinks> findByName(String name);
     Optional<List<Drinks>> findByType(String type);
-    List<Drinks> findByTypeIn(String type);
+    List<Drinks> findByTypeIn(List<String> types);
     Optional<List<Drinks>> findByPriceBetween(BigDecimal priceMin, BigDecimal priceMax);
     Optional<List<Drinks>> findByRatingBetween(double ratingMin, double ratingMax);
     Optional<List<Drinks>> findByNameContaining(String name);

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -13,17 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Room {
+public class Subscriber {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     String id;
 
-    String roomNumber;
-    String type; // (Standard, Deluxe, Suite,...)
-    int capacity;
-    double pricePerNight;
-    boolean isAvailable;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    List<RoomBooking> bookings;
+    String email;
 }
+

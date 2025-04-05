@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+
+
 @Getter
 @Setter
 @MappedSuperclass
