@@ -2,6 +2,7 @@ package com.connectJPA.demo.controller;
 
 
 import com.connectJPA.demo.dto.request.LogoutRequest;
+import com.connectJPA.demo.dto.request.RefreshRequest;
 import com.connectJPA.demo.dto.response.ApiResponse;
 import com.connectJPA.demo.dto.request.AuthenticationRequest;
 import com.connectJPA.demo.dto.response.AuthenticationResponse;
@@ -27,18 +28,12 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
-        System.out.println(request.getUsernameOrEmailOrPhone());
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + result.getToken());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(ApiResponse.<AuthenticationResponse>builder()
+        return ApiResponse.<AuthenticationResponse>builder()
                         .result(result)
-                        .build());
+                        .build();
     }
 
     @PostMapping("/logout")
@@ -50,11 +45,18 @@ public class AuthenticationController {
 
 
     @PostMapping(value = "/introspect")
-    public ApiResponse<IntrospectResponse> introspect(@RequestHeader("Authorization") IntrospectRequest request) throws ParseException, JOSEException {
-        // Loại bỏ "Bearer " để chỉ lấy token
+    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
 
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
+                .result(result)
+                .build();
+    }
+    @PostMapping(value = "/refresh")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+
+        return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
                 .build();
     }
